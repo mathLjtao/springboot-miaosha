@@ -1,0 +1,112 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.ljtao.springbootmiaosha.dao.MiaoshaGoodsMapper" >
+  <resultMap id="BaseResultMap" type="com.ljtao.springbootmiaosha.model.MiaoshaGoods" >
+    <id column="id" property="id" jdbcType="BIGINT" />
+    <result column="good_id" property="goodId" jdbcType="BIGINT" />
+    <result column="miaosha_price" property="miaoshaPrice" jdbcType="DECIMAL" />
+    <result column="stock_count" property="stockCount" jdbcType="INTEGER" />
+    <result column="start_date" property="startDate" jdbcType="TIMESTAMP" />
+    <result column="end_date" property="endDate" jdbcType="TIMESTAMP" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    id, good_id, miaosha_price, stock_count, start_date, end_date
+  </sql>
+  <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.Long" >
+    select 
+    <include refid="Base_Column_List" />
+    from miaosha_goods
+    where id = #{id,jdbcType=BIGINT}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Long" >
+    delete from miaosha_goods
+    where id = #{id,jdbcType=BIGINT}
+  </delete>
+  <insert id="insert" parameterType="com.ljtao.springbootmiaosha.model.MiaoshaGoods" >
+    insert into miaosha_goods (id, good_id, miaosha_price, 
+      stock_count, start_date, end_date
+      )
+    values (#{id,jdbcType=BIGINT}, #{goodId,jdbcType=BIGINT}, #{miaoshaPrice,jdbcType=DECIMAL}, 
+      #{stockCount,jdbcType=INTEGER}, #{startDate,jdbcType=TIMESTAMP}, #{endDate,jdbcType=TIMESTAMP}
+      )
+  </insert>
+  <insert id="insertSelective" parameterType="com.ljtao.springbootmiaosha.model.MiaoshaGoods" >
+    insert into miaosha_goods
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="id != null" >
+        id,
+      </if>
+      <if test="goodId != null" >
+        good_id,
+      </if>
+      <if test="miaoshaPrice != null" >
+        miaosha_price,
+      </if>
+      <if test="stockCount != null" >
+        stock_count,
+      </if>
+      <if test="startDate != null" >
+        start_date,
+      </if>
+      <if test="endDate != null" >
+        end_date,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="id != null" >
+        #{id,jdbcType=BIGINT},
+      </if>
+      <if test="goodId != null" >
+        #{goodId,jdbcType=BIGINT},
+      </if>
+      <if test="miaoshaPrice != null" >
+        #{miaoshaPrice,jdbcType=DECIMAL},
+      </if>
+      <if test="stockCount != null" >
+        #{stockCount,jdbcType=INTEGER},
+      </if>
+      <if test="startDate != null" >
+        #{startDate,jdbcType=TIMESTAMP},
+      </if>
+      <if test="endDate != null" >
+        #{endDate,jdbcType=TIMESTAMP},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="com.ljtao.springbootmiaosha.model.MiaoshaGoods" >
+    update miaosha_goods
+    <set >
+      <if test="goodId != null" >
+        good_id = #{goodId,jdbcType=BIGINT},
+      </if>
+      <if test="miaoshaPrice != null" >
+        miaosha_price = #{miaoshaPrice,jdbcType=DECIMAL},
+      </if>
+      <if test="stockCount != null" >
+        stock_count = #{stockCount,jdbcType=INTEGER},
+      </if>
+      <if test="startDate != null" >
+        start_date = #{startDate,jdbcType=TIMESTAMP},
+      </if>
+      <if test="endDate != null" >
+        end_date = #{endDate,jdbcType=TIMESTAMP},
+      </if>
+    </set>
+    where id = #{id,jdbcType=BIGINT}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.ljtao.springbootmiaosha.model.MiaoshaGoods" >
+    update miaosha_goods
+    set good_id = #{goodId,jdbcType=BIGINT},
+      miaosha_price = #{miaoshaPrice,jdbcType=DECIMAL},
+      stock_count = #{stockCount,jdbcType=INTEGER},
+      start_date = #{startDate,jdbcType=TIMESTAMP},
+      end_date = #{endDate,jdbcType=TIMESTAMP}
+    where id = #{id,jdbcType=BIGINT}
+  </update>
+
+  <update id="MiaoshaReduceOne" parameterType="java.lang.Long">
+      update miaosha_goods set stock_count = stock_count-1
+      where good_id=#{goodsId}
+  </update>
+
+</mapper>
