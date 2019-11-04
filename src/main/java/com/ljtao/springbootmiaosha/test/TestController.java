@@ -13,6 +13,7 @@ public class TestController {
     @RequestMapping("/test")
     public String fun1(ModelMap modelMap){
         modelMap.put("name","ljtao3");
+        Object obj;
         return "test/test";
     }
     /*

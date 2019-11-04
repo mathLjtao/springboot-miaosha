@@ -5,7 +5,9 @@ import org.slf4j.LoggerFactory;
 
 import javax.servlet.*;
 import java.io.IOException;
-
+/*
+    日志拦截器
+ */
 public class LogFilter implements Filter {
     private Logger logger= LoggerFactory.getLogger(LogFilter.class);
     @Override

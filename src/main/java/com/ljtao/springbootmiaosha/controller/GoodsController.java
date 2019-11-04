@@ -92,6 +92,9 @@ public class GoodsController {
         //获取cookie中信息
         Cookie[] cookies = req.getCookies();
         String cookieToken="";
+        if(cookies==null||cookies.length<1){
+            return "login";
+        }
         for(Cookie c:cookies){
             if("userToken".equals(c.getName())){
                 cookieToken=c.getValue();

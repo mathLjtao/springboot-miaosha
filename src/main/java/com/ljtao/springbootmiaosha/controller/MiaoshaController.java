@@ -36,13 +36,18 @@ public class MiaoshaController {
         if(user==null){
             return "login";
         }
+        GoodsVo goods=goodsService.getMiaoshaGoodsById(goodsId);
+        //判断库存
+        if(goods.getStockCount()<1){
+            model.addAttribute("errmsg",CodeMsg.MIAOSHA_OVAE.getMsg());
+            return "miaosha_fail";
+        }
         //检查是否有重复秒杀
         int checkOrderNum=miaoshaOrderService.selectByUserIdAndGoodsId(user.getId(),goodsId);
         if(checkOrderNum>0){
             model.addAttribute("errmsg", CodeMsg.MIAOSHA_REPEATE.getMsg());
             return "miaosha_fail";
         }
-        GoodsVo goods=goodsService.getMiaoshaGoodsById(goodsId);
         OrderInfo orderInfo=goodsService.handleMiaoshaOrder(user,goods);
 
 
