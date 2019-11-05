@@ -30,7 +30,7 @@
       #{stockCount,jdbcType=INTEGER}, #{startDate,jdbcType=TIMESTAMP}, #{endDate,jdbcType=TIMESTAMP}
       )
   </insert>
-  <insert id="insertSelective" parameterType="com.ljtao.springbootmiaosha.model.MiaoshaGoods" >
+  <insert id="insertSelective" parameterType="com.ljtao.springbootmiaosha.model.MiaoshaGoods"  >
     insert into miaosha_goods
     <trim prefix="(" suffix=")" suffixOverrides="," >
       <if test="id != null" >
@@ -104,9 +104,9 @@
     where id = #{id,jdbcType=BIGINT}
   </update>
 
-  <update id="MiaoshaReduceOne" parameterType="java.lang.Long">
+  <update id="MiaoshaReduceOne" parameterType="java.lang.Long" >
       update miaosha_goods set stock_count = stock_count-1
-      where good_id=#{goodsId}
+      where good_id=#{goodsId} and  stock_count>0
   </update>
 
 </mapper>

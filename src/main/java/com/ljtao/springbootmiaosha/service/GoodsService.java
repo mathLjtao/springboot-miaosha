@@ -8,6 +8,7 @@ import com.ljtao.springbootmiaosha.model.Goods;
 import com.ljtao.springbootmiaosha.model.MiaoshaOrder;
 import com.ljtao.springbootmiaosha.model.OrderInfo;
 import com.ljtao.springbootmiaosha.model.User;
+import com.ljtao.springbootmiaosha.util.CodeMsg;
 import com.ljtao.springbootmiaosha.vo.GoodsVo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -42,9 +43,12 @@ public class GoodsService {
         return goods;
     }
     @Transactional
-    public OrderInfo handleMiaoshaOrder(User user, GoodsVo goods) {
+    public OrderInfo handleMiaoshaOrder(User user, GoodsVo goods) throws Exception{
         //减库存，下订单，下秒杀订单
-        miaoshaGoodsMapper.MiaoshaReduceOne(goods.getId());
+        int i = miaoshaGoodsMapper.MiaoshaReduceOne(goods.getId());
+        if(i<1){
+            throw new Exception("无法减少秒杀商品库存，"+CodeMsg.MIAOSHA_OVAE.getMsg());
+        }
         OrderInfo orderInfo=OrderInfo.builder().createDate(new Date()).deliveryAddrId(0l).goodsCount(1)
                 .goodsName(goods.getGoodsName()).goodsPrice(goods.getMiaoshaPrice()).orderChannel((byte)1)
                 .status((byte)0).userId(user.getId()).goodId(goods.getId()).build();

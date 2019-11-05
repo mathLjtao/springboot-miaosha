@@ -17,5 +17,5 @@ public interface MiaoshaGoodsMapper {
     int updateByPrimaryKey(MiaoshaGoods record);
 
     //根据goodsId，减少当前获取的一个数量
-    void MiaoshaReduceOne(Long goodsId);
+    int MiaoshaReduceOne(Long goodsId);
 }

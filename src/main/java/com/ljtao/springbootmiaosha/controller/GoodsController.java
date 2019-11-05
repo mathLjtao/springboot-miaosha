@@ -6,6 +6,7 @@ import com.ljtao.springbootmiaosha.redis.RedisService;
 import com.ljtao.springbootmiaosha.service.GoodsService;
 import com.ljtao.springbootmiaosha.service.UserService;
 import com.ljtao.springbootmiaosha.util.JsonData;
+import com.ljtao.springbootmiaosha.vo.GoodsDetailVo;
 import com.ljtao.springbootmiaosha.vo.GoodsVo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.RedisTemplate;
@@ -121,4 +122,39 @@ public class GoodsController {
         model.addAttribute("user",user);
         return "goods_list";
     }
+    /*
+        页面静态化加载模式
+     */
+    @RequestMapping("static_to_miaosha_detail/{goodsId}")
+    @ResponseBody
+    public JsonData staticGetMiaoshaGoodsById(HttpServletRequest req, HttpServletResponse res,
+                                              @PathVariable Long goodsId){
+        GoodsVo goods=goodsService.getMiaoshaGoodsById(goodsId);
+        GoodsDetailVo gb=new GoodsDetailVo();
+
+        User user =userService.getUserByRequest(req,res);
+        int miaoshaStatus=0;
+        int remainSeconds=0;
+
+        long startAt = goods.getStartDate().getTime();
+        long endAt = goods.getEndDate().getTime();
+        long now =System.currentTimeMillis();
+        if(now-startAt<0){
+            miaoshaStatus=0;
+            remainSeconds=(int)((startAt-now)/1000);
+        }else if(now-endAt>0){
+            remainSeconds=-1;
+            miaoshaStatus=-1;
+        }
+        else{
+            miaoshaStatus=1;
+        }
+        gb.setGoods(goods);
+        gb.setMiaoshaStatus(miaoshaStatus);
+        gb.setRemainSeconds(remainSeconds);
+        gb.setUser(user);
+        JsonData success = JsonData.success(gb);
+        return success;
+    }
+
 }

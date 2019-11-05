@@ -26,6 +26,7 @@ public class GlobalExceptionHandler {
         String url=req.getRequestURI();
         String message = re.getMessage();
         logger.error(message);
+        logger.error(req.getRequestURL().toString());
         return JsonData.fail(url+":"+message);
     }
 }

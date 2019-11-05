@@ -29,7 +29,7 @@ public class LoginController {
     @ResponseBody
     @RequestMapping("/do_login")
     public JsonData doLogin( HttpServletRequest req, HttpServletResponse res ,
-                            @RequestParam("mobile") String phone, @RequestParam("password") String password){
+                            @RequestParam("phone") String phone, @RequestParam("password") String password){
 
         List<User> userList=userService.findByPhone(phone);
         if(userList.isEmpty()){
