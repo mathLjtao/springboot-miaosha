@@ -60,4 +60,8 @@ public class GoodsService {
         miaoshaOrderMapper.insertSelective(miaoshaOrder);
         return orderInfo;
     }
+    @Transactional
+    public void optimizeHandleMiaosha(User user, GoodsVo goods){
+
+    }
 }

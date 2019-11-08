@@ -10,6 +10,7 @@ import java.util.concurrent.TimeUnit;
 public class RedisService<K,V> {
     @Autowired
     private RedisTemplate redisTemplate;
+    public static final String GOODS_STOCK_PRE="GOODS_STOCK";
     public  void set(K key, V value, long time){
         ValueOperations<K,V> operations = redisTemplate.opsForValue();
         operations.set(key,value,time,TimeUnit.SECONDS);

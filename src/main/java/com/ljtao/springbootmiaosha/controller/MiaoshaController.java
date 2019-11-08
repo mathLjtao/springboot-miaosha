@@ -2,6 +2,8 @@ package com.ljtao.springbootmiaosha.controller;
 
 import com.ljtao.springbootmiaosha.model.OrderInfo;
 import com.ljtao.springbootmiaosha.model.User;
+import com.ljtao.springbootmiaosha.rabbitmq.MQSender;
+import com.ljtao.springbootmiaosha.redis.RedisService;
 import com.ljtao.springbootmiaosha.service.GoodsService;
 import com.ljtao.springbootmiaosha.service.MiaoshaOrderService;
 import com.ljtao.springbootmiaosha.service.OrderInfoService;
@@ -31,6 +33,11 @@ public class MiaoshaController {
     private MiaoshaOrderService miaoshaOrderService;
     @Autowired
     private OrderInfoService orderInfoService;
+    @Autowired
+    private RedisService redisService;
+    @Autowired
+    private MQSender mqSender;
+
 
     /*
         通过货物id，进行减库存，下订单，下秒杀订单
@@ -61,6 +68,9 @@ public class MiaoshaController {
         model.addAttribute("orderInfo",orderInfo);
         return "order_detail";
     }
+    /*
+        将秒杀后转向，是静态页面来接收数据
+     */
     @RequestMapping("static_do_miaosha")
     @ResponseBody
     public JsonData staticDoMiaosha(HttpServletResponse res, HttpServletRequest req
@@ -83,6 +93,36 @@ public class MiaoshaController {
 
 
         return JsonData.success(orderInfo);
+    }
+    /*
+        运用redis、rabbitmq来处理商品秒杀
+     */
+    @RequestMapping("optimizeHandleMiaosha")
+    @ResponseBody
+    public JsonData optimizeHandleMiaosha(HttpServletResponse res, HttpServletRequest req
+            , @RequestParam("goodsId") Long goodsId){
+        User user = userService.getUserByRequest(req, res);
+        if(user==null){
+            return JsonData.fail("用户未登录，请先登录！");
+        }
+        Object o = redisService.get(RedisService.GOODS_STOCK_PRE + goodsId);
+        Integer stockCount;
+        //判断是否将秒杀商品的库存数量加入到redis中
+        if(o==null){
+            GoodsVo goods = goodsService.getMiaoshaGoodsById(goodsId);
+            stockCount = goods.getStockCount();
+            redisService.set(RedisService.GOODS_STOCK_PRE +goodsId,stockCount,3600);
+        }
+        else{
+            stockCount=(Integer)o;
+        }
+        if(stockCount<1){
+            return JsonData.fail("商品已被秒杀完毕！");
+        }
+        redisService.set(RedisService.GOODS_STOCK_PRE +goodsId,stockCount-1,3600);
+        mqSender.miaoshaSend("aa");
+
+        return JsonData.success("排队中");
     }
 
 }
