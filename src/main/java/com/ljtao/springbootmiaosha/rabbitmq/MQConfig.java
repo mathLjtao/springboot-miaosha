@@ -19,6 +19,12 @@ public class MQConfig {
     public static final String TOPIC_EXCHANGE = "topicExchage";
     public static final String FANOUT_EXCHANGE = "fanoutxchage";
     public static final String HEADERS_EXCHANGE = "headersExchage";
+    @Bean
+    public Queue miaoshaQueue(){
+        return new Queue(MQConfig.MIAOSHA_QUEUE,true);
+    }
+
+
     /*
         Direct模式，
      */

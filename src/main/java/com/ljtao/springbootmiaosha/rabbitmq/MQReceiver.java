@@ -1,6 +1,14 @@
 package com.ljtao.springbootmiaosha.rabbitmq;
 
+import com.ljtao.springbootmiaosha.domian.MiaoshaMessage;
+import com.ljtao.springbootmiaosha.model.OrderInfo;
+import com.ljtao.springbootmiaosha.model.User;
+import com.ljtao.springbootmiaosha.service.GoodsService;
+import com.ljtao.springbootmiaosha.service.MiaoshaOrderService;
+import com.ljtao.springbootmiaosha.util.JsonData;
+import com.ljtao.springbootmiaosha.vo.GoodsVo;
 import org.springframework.amqp.rabbit.annotation.RabbitListener;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 /*
     消息接收者
@@ -8,9 +16,28 @@ import org.springframework.stereotype.Service;
 @Service
 public class MQReceiver {
 
+    @Autowired
+    private GoodsService goodsService;
+    private MiaoshaOrderService miaoshaOrderService;
+
     @RabbitListener(queues = MQConfig.MIAOSHA_QUEUE)
-    public void miaoshaReceive(String msg){
-        System.out.println(msg);
+    public void miaoshaReceive(String message){
+        try{
+            //这里让线程停止一秒，前端页面等待效果会明显一些
+            Thread.sleep(1000);
+        }catch (Exception e){
+            e.printStackTrace();
+        }
+
+        MiaoshaMessage miaoshaMessage = JsonData.stringToBean(message, MiaoshaMessage.class);
+        GoodsVo goodsVo = goodsService.getMiaoshaGoodsById(miaoshaMessage.getGoodsId());
+        User user = miaoshaMessage.getUser();
+        try{
+            goodsService.optimizeHandleMiaosha(user, goodsVo);
+        }
+        catch (Exception e){
+            e.printStackTrace();
+        }
     }
 
     @RabbitListener(queues = MQConfig.TEXT_QUEUE_NAME)

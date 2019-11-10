@@ -20,4 +20,13 @@ public class RedisService<K,V> {
 
         return operations.get(key);
     }
+    public void setGoodsOver(Long goodsId) {
+        redisTemplate.opsForValue().set("isGoodsOver", true, 3600,TimeUnit.SECONDS);
+    }
+
+    public boolean getGoodsOver(long goodsId) {
+        if(redisTemplate.opsForValue().get("isGoodsOver")==null)
+            return false;
+        return (boolean)redisTemplate.opsForValue().get("isGoodsOver");
+    }
 }

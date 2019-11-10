@@ -40,7 +40,7 @@ CREATE TABLE order_info(
 CREATE TABLE miaosha_order(
 	id bigint(20) not null auto_increment ,
 	user_id bigint(20) default null  comment '用户id',
-	oder_id bigint(20) default null  comment '订单id',
+	order_id bigint(20) default null  comment '订单id',
 	good_id bigint(20) default null  comment '商品id',
 
 	primary key(id)

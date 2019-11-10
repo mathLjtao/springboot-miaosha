@@ -5,7 +5,7 @@ public class MiaoshaOrder {
 
     private Long userId;
 
-    private Long oderId;
+    private Long orderId;
 
     private Long goodId;
 
@@ -25,12 +25,12 @@ public class MiaoshaOrder {
         this.userId = userId;
     }
 
-    public Long getOderId() {
-        return oderId;
+    public Long getOrderId() {
+        return orderId;
     }
 
-    public void setOderId(Long oderId) {
-        this.oderId = oderId;
+    public void setOrderId(Long orderId) {
+        this.orderId = orderId;
     }
 
     public Long getGoodId() {

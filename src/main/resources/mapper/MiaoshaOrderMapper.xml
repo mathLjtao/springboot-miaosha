@@ -4,11 +4,11 @@
   <resultMap id="BaseResultMap" type="com.ljtao.springbootmiaosha.model.MiaoshaOrder" >
     <id column="id" property="id" jdbcType="BIGINT" />
     <result column="user_id" property="userId" jdbcType="BIGINT" />
-    <result column="oder_id" property="oderId" jdbcType="BIGINT" />
+    <result column="order_id" property="orderId" jdbcType="BIGINT" />
     <result column="good_id" property="goodId" jdbcType="BIGINT" />
   </resultMap>
   <sql id="Base_Column_List" >
-    id, user_id, oder_id, good_id
+    id, user_id, order_id, good_id
   </sql>
   <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.Long" >
     select 
@@ -21,9 +21,9 @@
     where id = #{id,jdbcType=BIGINT}
   </delete>
   <insert id="insert" parameterType="com.ljtao.springbootmiaosha.model.MiaoshaOrder" >
-    insert into miaosha_order (id, user_id, oder_id, 
+    insert into miaosha_order (id, user_id, order_id,
       good_id)
-    values (#{id,jdbcType=BIGINT}, #{userId,jdbcType=BIGINT}, #{oderId,jdbcType=BIGINT}, 
+    values (#{id,jdbcType=BIGINT}, #{userId,jdbcType=BIGINT}, #{orderId,jdbcType=BIGINT},
       #{goodId,jdbcType=BIGINT})
   </insert>
   <insert id="insertSelective" parameterType="com.ljtao.springbootmiaosha.model.MiaoshaOrder" >
@@ -35,8 +35,8 @@
       <if test="userId != null" >
         user_id,
       </if>
-      <if test="oderId != null" >
-        oder_id,
+      <if test="orderId != null" >
+        order_id,
       </if>
       <if test="goodId != null" >
         good_id,
@@ -49,8 +49,8 @@
       <if test="userId != null" >
         #{userId,jdbcType=BIGINT},
       </if>
-      <if test="oderId != null" >
-        #{oderId,jdbcType=BIGINT},
+      <if test="orderId != null" >
+        #{orderId,jdbcType=BIGINT},
       </if>
       <if test="goodId != null" >
         #{goodId,jdbcType=BIGINT},
@@ -63,8 +63,8 @@
       <if test="userId != null" >
         user_id = #{userId,jdbcType=BIGINT},
       </if>
-      <if test="oderId != null" >
-        oder_id = #{oderId,jdbcType=BIGINT},
+      <if test="orderId != null" >
+        order_id = #{orderId,jdbcType=BIGINT},
       </if>
       <if test="goodId != null" >
         good_id = #{goodId,jdbcType=BIGINT},
@@ -75,13 +75,19 @@
   <update id="updateByPrimaryKey" parameterType="com.ljtao.springbootmiaosha.model.MiaoshaOrder" >
     update miaosha_order
     set user_id = #{userId,jdbcType=BIGINT},
-      oder_id = #{oderId,jdbcType=BIGINT},
+      order_id = #{orderId,jdbcType=BIGINT},
       good_id = #{goodId,jdbcType=BIGINT}
     where id = #{id,jdbcType=BIGINT}
   </update>
-  <select id="selectByUserIdAndGoodsId" parameterType="map" resultType="int">
+  <select id="countByUserIdAndGoodsId" parameterType="map" resultType="int">
     select count(1) from miaosha_order
     where user_id=#{userId} and good_id=#{goodsId}
 
   </select>
+  <select id="selectByUserIdAndGoodsId" parameterType="map" resultType="com.ljtao.springbootmiaosha.model.MiaoshaOrder">
+    select <include refid="Base_Column_List" /> from miaosha_order
+    where user_id=#{userId} and good_id=#{goodsId}
+
+  </select>
+
 </mapper>

@@ -17,5 +17,7 @@ public interface MiaoshaOrderMapper {
 
     int updateByPrimaryKey(MiaoshaOrder record);
 
-    int selectByUserIdAndGoodsId(@Param("userId") Long userId, @Param("goodsId") Long goodsId);
+    int countByUserIdAndGoodsId(@Param("userId") Long userId, @Param("goodsId") Long goodsId);
+
+    MiaoshaOrder selectByUserIdAndGoodsId(@Param("userId") Long userId,@Param("goodsId") Long goodsId);
 }
