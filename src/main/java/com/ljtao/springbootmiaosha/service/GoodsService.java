@@ -68,7 +68,7 @@ public class GoodsService {
         //减库存，下订单，下秒杀订单
         int i = miaoshaGoodsMapper.MiaoshaReduceOne(goods.getId());
         if(i<1){
-            //这里说明库存没有了，顺便把缓存的数量设置为-1
+            //这里说明库存没有了，顺便将此个商品没有库存的信息保存在redis中
             redisService.setGoodsOver(goods.getId());
             throw new Exception("无法减少秒杀商品库存，"+CodeMsg.MIAOSHA_OVAE.getMsg());
         }

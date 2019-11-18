@@ -31,8 +31,10 @@
             <td th:text="${goods.miaoshaPrice}"></td>
             <td th:text="${goods.stockCount}"></td>
             <!--<td><a th:href="'/miaosha/goods/to_miaosha_detail/'+${goods.id}">详情</a></td>-->
-            <!--<td><a th:href="'/goods_detail.htm?goodsId='+${goods.id}">详情</a></td>-->
-            <td><a th:href="'/goods_detail_optimize.htm?goodsId='+${goods.id}">详情</a></td>
+            <!--<td><a th:href="'/goods_detail.htm?goodsId='+${goods.id}">详情</a></td> -->
+            <!--<td><a th:href="'/goods_detail_optimize.htm?goodsId='+${goods.id}">详情</a></td> 用于秒杀接口优化减少访问数据库-->
+
+            <td><a th:href="'/goods_detail_security_set.htm?goodsId='+${goods.id}">详情</a></td><!--用于优化秒杀接口（动态请求接口、验证码、限流）-->
         </tr>
     </table>
 </div>

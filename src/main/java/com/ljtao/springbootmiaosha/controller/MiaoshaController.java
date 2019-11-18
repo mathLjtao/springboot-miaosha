@@ -1,30 +1,36 @@
 package com.ljtao.springbootmiaosha.controller;
 
+import com.ljtao.springbootmiaosha.access.AccessLimit;
 import com.ljtao.springbootmiaosha.domian.MiaoshaMessage;
 import com.ljtao.springbootmiaosha.model.MiaoshaOrder;
 import com.ljtao.springbootmiaosha.model.OrderInfo;
 import com.ljtao.springbootmiaosha.model.User;
 import com.ljtao.springbootmiaosha.rabbitmq.MQSender;
 import com.ljtao.springbootmiaosha.redis.RedisService;
-import com.ljtao.springbootmiaosha.service.GoodsService;
-import com.ljtao.springbootmiaosha.service.MiaoshaOrderService;
-import com.ljtao.springbootmiaosha.service.OrderInfoService;
-import com.ljtao.springbootmiaosha.service.UserService;
+import com.ljtao.springbootmiaosha.service.*;
 import com.ljtao.springbootmiaosha.util.CodeMsg;
 import com.ljtao.springbootmiaosha.util.JsonData;
+import com.ljtao.springbootmiaosha.util.UUIDUtil;
 import com.ljtao.springbootmiaosha.vo.GoodsVo;
 import com.ljtao.springbootmiaosha.vo.OrderDetailVo;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.redis.core.BoundValueOperations;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
+import javax.imageio.ImageIO;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import java.awt.image.BufferedImage;
+import java.io.OutputStream;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.TimeUnit;
 
 @Controller
 @RequestMapping("/miaosha/miaosha")
@@ -40,7 +46,11 @@ public class MiaoshaController {
     @Autowired
     private RedisService redisService;
     @Autowired
+    private MiaoshaService miaoshaService;
+    @Autowired
     private MQSender mqSender;
+    @Autowired
+    private RedisTemplate redisTemplate;
 
     //判断缓存中的库存是否已经全部没了，可以减少访问缓存
     private Map<Long,Boolean> localOverMap =new HashMap<Long, Boolean>();
@@ -171,4 +181,94 @@ public class MiaoshaController {
             }
         }
     }
+
+    /*
+        1、生成变化的访问接口。（隐藏秒杀接口）
+        2、验证码判断。
+        3、接口限流防刷。
+     */
+    @AccessLimit(seconds = 5,maxCount = 3)//间隔seconds秒内最多只能访问maxCount次，超过限制后需再等seconds秒才能访问，自己实现的注解配置，这个需要掌握起来
+    @RequestMapping("/path")//生成随机秒杀接口参数
+    @ResponseBody
+    public JsonData getMiaoshaPath(HttpServletResponse res, HttpServletRequest req,User user
+            , @RequestParam("goodsId") Long goodsId
+            ,@RequestParam(value="verifyCode",defaultValue = "0") int verifyCode) throws Exception {
+        if(user==null){
+            return JsonData.fail("用户未登录，请先登录！");
+        }
+        //检验验证码
+        boolean check = miaoshaService.checkVerifyCode(user, goodsId, verifyCode);
+        if(!check){
+            return JsonData.fail(CodeMsg.REQUEST_ILLEGAL.getMsg()+",验证码错误！");
+        }
+        String path=miaoshaService.createMiaoshaPath(user,goodsId);
+        return JsonData.success(path);
+    }
+    @RequestMapping("/{path}/dynamicAPIDoMiaosha")
+    @ResponseBody
+    public JsonData dynamicAPIDoMiaosha(HttpServletResponse res, HttpServletRequest req
+            , @RequestParam("goodsId") Long goodsId, @PathVariable("path") String path) throws Exception{
+        User user = userService.getUserByRequest(req, res);
+        if(user==null){
+            return JsonData.fail("用户未登录，请先登录！");
+        }
+        boolean check=miaoshaService.checkMiaoshaPath(user, goodsId, path);
+        if(!check){
+            return JsonData.fail(CodeMsg.REQUEST_ILLEGAL.getMsg());
+        }
+        GoodsVo goods=goodsService.getMiaoshaGoodsById(goodsId);
+        //判断库存
+        if(goods.getStockCount()<1){
+            return JsonData.fail(CodeMsg.MIAOSHA_OVAE.getMsg());
+        }
+        //检查是否有重复秒杀
+        int checkOrderNum=miaoshaOrderService.countByUserIdAndGoodsId(user.getId(),goodsId);
+        if(checkOrderNum>0){
+            return JsonData.fail(CodeMsg.MIAOSHA_REPEATE.getMsg());
+        }
+        OrderInfo orderInfo=goodsService.handleMiaoshaOrder(user,goods);
+        return JsonData.success(orderInfo.getId());
+    }
+    /**
+     * orderId：成功
+     * -1：秒杀失败
+     * */
+    @RequestMapping("/dynamicAPIDoMiaoshaResult")
+    @ResponseBody
+    public JsonData dynamicAPIDoMiaoshaResult(HttpServletResponse res, HttpServletRequest req
+            , @RequestParam("goodsId") Long goodsId){
+        User user = userService.getUserByRequest(req, res);
+        if(user==null){
+            return JsonData.fail("用户未登录，请先登录！");
+        }
+        MiaoshaOrder miaoshaOrder=miaoshaOrderService.selectByUserIdAndGoodsId(user.getId(),goodsId);
+        if(miaoshaOrder!=null){
+            return JsonData.success("秒杀成功！",miaoshaOrder.getOrderId());
+        }
+        else{
+            return JsonData.success(-1);
+
+        }
+    }
+    @RequestMapping("/verifyCode")
+    @ResponseBody
+    public JsonData getMiaoshaVerifyCode(HttpServletResponse res, HttpServletRequest req
+            , @RequestParam("goodsId") Long goodsId){
+        User user = userService.getUserByRequest(req, res);
+        if(user==null){
+            return JsonData.fail("用户未登录，请先登录！");
+        }
+        try {
+            BufferedImage image  = miaoshaService.createVerifyCode(user, goodsId);
+            OutputStream out = res.getOutputStream();
+            ImageIO.write(image, "JPEG", out);
+            out.flush();
+            out.close();
+            return null;
+        }catch(Exception e) {
+            e.printStackTrace();
+            return JsonData.fail(CodeMsg.MIAOSHA_FAIL.getMsg());
+        }
+    }
+
 }

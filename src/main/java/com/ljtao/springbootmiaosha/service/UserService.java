@@ -30,10 +30,10 @@ public class UserService {
 
     public void addCookie(HttpServletResponse response,String token,User user){
         Cookie cookie =new Cookie("userToken",token);
-        cookie.setMaxAge(3600);
+        cookie.setMaxAge(3600*10);
         cookie.setPath("/");
         //加入到缓存中
-        redisService.set(token,user,3600);
+        redisService.set(token,user,3600*10);
         response.addCookie(cookie);
     }
     /*
