@@ -7,12 +7,16 @@ import org.springframework.context.annotation.Configuration;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ *
+ */
 @Configuration
 public class FilterBeanConfig {
     /*
     1、构造filter
     2、配置拦截urlPattern
     3、利用FilterRegistrationBean进行包装
+    4、可以记录所有经过的url
      */
     @Bean
     public FilterRegistrationBean logFilter(){
