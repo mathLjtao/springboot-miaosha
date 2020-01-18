@@ -1,6 +1,7 @@
 package com.ljtao.springbootmiaosha.filter;
 
 import org.springframework.boot.web.servlet.FilterRegistrationBean;
+import org.springframework.boot.web.servlet.ServletRegistrationBean;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
@@ -20,6 +21,7 @@ public class FilterBeanConfig {
      */
     @Bean
     public FilterRegistrationBean logFilter(){
+
         FilterRegistrationBean filterRegistrationBean=new FilterRegistrationBean();
         filterRegistrationBean.setFilter(new LogFilter());
         List<String> urList=new ArrayList<>();
@@ -27,4 +29,6 @@ public class FilterBeanConfig {
         filterRegistrationBean.setUrlPatterns(urList);
         return filterRegistrationBean;
     }
+
+    // 如果是配置servlet 则用 ServletRegistrationBean 来注册。。不过一般不适用这种方式，都是用注解@Controller或者是@RestController
 }

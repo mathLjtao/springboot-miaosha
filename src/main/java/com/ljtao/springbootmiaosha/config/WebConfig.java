@@ -21,6 +21,8 @@ public class WebConfig implements WebMvcConfigurer {
     }
     //添加自定义拦截器
     public void addInterceptors(InterceptorRegistry registry) {
+        //addPathPatterns() 添加需要拦截得路径
+        // excludePathPatterns() 添加不需要拦截的路径
         registry.addInterceptor(accessLimitInterceptor);
     }
 
