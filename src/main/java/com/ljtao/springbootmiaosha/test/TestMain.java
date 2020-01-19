@@ -3,6 +3,8 @@ import org.springframework.amqp.core.AmqpTemplate;
 import org.springframework.amqp.core.Message;
 import org.springframework.amqp.core.MessageProperties;
 
+import java.util.List;
+
 public class TestMain {
     public static void main(String[] args) {
         fun1();
@@ -13,6 +15,6 @@ public class TestMain {
         properties.setHeader("head2","value2");
         Message message=new Message("text msg！".getBytes(),properties);
         System.out.println(message.toString());
-
+        //List.of(1,2,3);
     }
 }
