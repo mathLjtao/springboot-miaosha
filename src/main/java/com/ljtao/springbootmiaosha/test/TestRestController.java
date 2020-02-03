@@ -29,7 +29,7 @@ public class TestRestController {
      */
     @RequestMapping("/getUserById")
     public User getUserById(Long id){
-        id=8l;
+        id=8L;
         return userService.getUserById(id);
     }
     /*
@@ -79,6 +79,24 @@ public class TestRestController {
     public JsonData fun6(){
         mqSender.testHeader();
         return JsonData.success("success");
+    }
+    /**
+     * 测试 user,token 放入缓存中
+     */
+    private volatile TestOneValueCache cache=new TestOneValueCache(null,null);
+    @RequestMapping("/fun7")
+    public JsonData fun7(String un){
+        //每次请求，线程会变化
+        System.out.println("fun7:"+Thread.currentThread().getName());
+        //如果是默认的话。每次请求，对象不会变化，都是单例。
+        System.out.println(this);
+        String token = cache.getToken(un);
+        if(token==null){
+            token="token:"+un+"----1";
+            cache=new TestOneValueCache(un,token);
+        }
+
+        return JsonData.success(token);
     }
 
 }
