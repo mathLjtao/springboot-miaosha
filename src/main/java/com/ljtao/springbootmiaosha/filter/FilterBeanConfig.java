@@ -15,7 +15,7 @@ import java.util.List;
 public class FilterBeanConfig {
     /*
     1、构造filter
-    2、配置拦截urlPattern
+    2、配置过滤urlPattern
     3、利用FilterRegistrationBean进行包装
     4、可以记录所有经过的url
      */
