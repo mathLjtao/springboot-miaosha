@@ -98,5 +98,13 @@ public class TestRestController {
 
         return JsonData.success(token);
     }
+    /*
+    测试 设置的springaop
+     */
+    @GetMapping("/fun8")
+    public JsonData fun8(){
+
+        return JsonData.success("success");
+    }
 
 }
