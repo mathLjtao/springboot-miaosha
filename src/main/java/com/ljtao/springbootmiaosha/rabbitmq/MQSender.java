@@ -19,6 +19,10 @@ public class MQSender {
         amqpTemplate.convertAndSend(MQConfig.MIAOSHA_QUEUE,msg);
     }
 
+    public void inWordRecordSend(String msg){
+        amqpTemplate.convertAndSend(MQConfig.INWORK_RECORD_QUEUE,msg);
+    }
+
 
     public void testSend(String msg){
         System.out.println("send: "+msg);

@@ -22,6 +22,7 @@ public class TestRestController {
     private MQSender mqSender;
     @RequestMapping("/run")
     public String run(){
+        System.out.println("82");
         return "success";
     }
     /*

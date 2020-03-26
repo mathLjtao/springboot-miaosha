@@ -111,7 +111,7 @@ public class MiaoshaController {
         return JsonData.success(orderInfo);
     }
     /*
-        运用redis、rabbitmq来处理商品秒杀
+        运用redis、rabbitmq来处理商品秒杀  ，goods_detail_optimize.htm 页面调用
      */
     @RequestMapping("optimizeHandleMiaosha")
     @ResponseBody

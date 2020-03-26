@@ -1,5 +1,6 @@
 package com.ljtao.springbootmiaosha.rabbitmq;
 
+import com.ljtao.springbootmiaosha.dao.UserMapper;
 import com.ljtao.springbootmiaosha.domian.MiaoshaMessage;
 import com.ljtao.springbootmiaosha.model.OrderInfo;
 import com.ljtao.springbootmiaosha.model.User;
@@ -18,6 +19,8 @@ public class MQReceiver {
 
     @Autowired
     private GoodsService goodsService;
+    @Autowired
+    private UserMapper userMapper;
     private MiaoshaOrderService miaoshaOrderService;
 
     @RabbitListener(queues = MQConfig.MIAOSHA_QUEUE)
@@ -38,6 +41,18 @@ public class MQReceiver {
         catch (Exception e){
             e.printStackTrace();
         }
+    }
+
+    @RabbitListener(queues = MQConfig.INWORK_RECORD_QUEUE)
+    public void inWorkRecordReceive(String message){
+        User user = JsonData.stringToBean(message, User.class);
+//        try {
+//            Thread.sleep(20);
+//        } catch (InterruptedException e) {
+//            e.printStackTrace();
+//        }
+        userMapper.insert(user);
+        //System.out.println(user.getPassword());
     }
 
     @RabbitListener(queues = MQConfig.TEXT_QUEUE_NAME)

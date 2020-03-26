@@ -24,4 +24,11 @@
         from user
         where phone=#{phone} and password = #{password}
     </select>
+
+    <insert id="insert" parameterType="com.ljtao.springbootmiaosha.model.User" >
+    insert into user (id, phone, name,
+      password, salt)
+    values (#{id}, #{phone}, #{name},
+      #{password}, #{salt})
+  </insert>
 </mapper>

@@ -11,6 +11,7 @@ import java.util.Map;
 public class MQConfig {
 
     public static final String MIAOSHA_QUEUE="miaosha.queue";
+    public static final String INWORK_RECORD_QUEUE="inword_record.queue";
 
     public static final String  TEXT_QUEUE_NAME="textQueue";
     public static final String TOPIC_QUEUE1 = "topic.queue1";
@@ -22,6 +23,11 @@ public class MQConfig {
     @Bean
     public Queue miaoshaQueue(){
         return new Queue(MQConfig.MIAOSHA_QUEUE,true);
+    }
+
+    @Bean
+    public Queue inWorkRecordQueue(){
+        return new Queue(MQConfig.INWORK_RECORD_QUEUE,true);
     }
 
 
